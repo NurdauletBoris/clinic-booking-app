@@ -1,0 +1,35 @@
+<div class="home-container">
+  <header class="header-main">
+    <div class="logo" routerLink="/">Clinic booking</div>
+    
+    <div class="search-bar">
+      <input 
+        type="text" 
+        [(ngModel)]="searchQuery" 
+        (keyup.enter)="onSearch()"
+        placeholder="Врачи, медцентр или специализация"
+      >
+      <button class="search-btn" (click)="onSearch()">🔍</button>
+    </div>
+
+    <nav class="nav-links">
+      <button class="doctors-link" routerLink="/search">Врачи</button>
+    </nav>
+  </header>
+
+  <section class="categories-section">
+    <h3>Популярные врачи для взрослых</h3>
+    <div class="category-grid">
+      <div class="category-card" *ngFor="let cat of categories" (click)="filterByCategory(cat)">
+        <div class="icon-wrapper">
+          <img 
+            src="https://cdn-icons-png.flaticon.com/512/387/387561.png" 
+            [alt]="cat" 
+            (error)="handleIconError($event)"
+          >
+        </div>
+        <span>{{ cat }}</span>
+      </div>
+    </div>
+  </section>
+</div>

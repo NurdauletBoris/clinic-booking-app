@@ -1,0 +1,28 @@
+<div class="booking-container" *ngIf="doctor">
+  <button class="back-btn" (click)="goBack()">← Назад</button>
+  
+  <h2>Запись к врачу: {{ doctor.name }}</h2>
+  
+  <div class="details">
+    <p><b>Специальность:</b> {{ doctor.specialty }}</p>
+    
+    <p><b>Клиника:</b> {{ doctor.clinic }}</p> 
+    
+    <p><b>Рейтинг:</b> ⭐ {{ doctor.rating }}</p>
+    
+    <h4>Выберите время:</h4>
+    <div class="slots">
+      <button 
+        *ngFor="let slot of doctor.slots" 
+        class="slot-btn"
+        [class.active]="selectedSlot === slot"
+        (click)="selectSlot(slot)">
+        {{ slot }}
+      </button>
+    </div>
+    
+    <button class="confirm-btn" [disabled]="!selectedSlot" (click)="confirmBooking()">
+      Confirm Booking
+    </button>
+  </div>
+</div>
