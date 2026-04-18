@@ -1,81 +1,467 @@
-.booking-container {
+.page-wrapper {
+  background-color: #f5f7f9;
+  min-height: 100vh;
   padding: 20px;
-  max-width: 800px;
-  margin: 0 auto;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-family: 'Segoe UI', Roboto, sans-serif;
 }
 
-.back-btn {
-  padding: 8px 15px;
-  margin-bottom: 25px;
+.main-content {
+  max-width: 1100px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1fr 350px;
+  gap: 20px;
+}
+
+.nav-tabs {
+  display: flex;
+  justify-content: center;
+  gap: 30px;
+  margin-bottom: 20px;
+}
+
+.tab-btn {
+  background: none;
+  border: none;
+  font-size: 16px;
+  font-weight: 600;
+  color: #888;
   cursor: pointer;
-  background: #007bff;
+  padding: 10px 5px 10px 5px;
+  border-bottom: 3px solid transparent;
+  transition: 0.3s;
+}
+
+.tab-btn.active {
+  color: #000;
+  border-bottom-color: #4EBC73;
+}
+
+.card {
+  background: white;
+  border-radius: 12px;
+  padding: 24px;
+  margin-bottom: 20px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+}
+
+.doctor-main-info {
+  display: flex;
+  gap: 20px;
+  position: relative;
+}
+
+.avatar {
+  width: 100px;
+  height: 100px;
+  border-radius: 12px;
+  object-fit: cover;
+}
+
+.experience-badge {
+  background: #f0f0f0;
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 13px;
+  color: #555;
+}
+
+.doctor-name {
+  margin: 10px 0 5px 0;
+  font-size: 22px;
+  font-weight: 700;
+}
+
+.doctor-desc {
+  color: #777;
+  font-size: 14px;
+}
+
+.live-rating-row {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin-top: 8px;
+}
+
+.live-star { color: #FFC107; font-size: 18px; line-height: 1; }
+.live-rating-value { font-size: 17px; font-weight: 800; color: #1a1a1a; }
+.live-rating-count { font-size: 13px; color: #888; }
+
+.date-tabs {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+  overflow-x: auto;
+  padding-bottom: 5px;
+}
+
+.date-tab {
+  background: white;
+  border: 1px solid #e2e8f0;
+  padding: 8px 16px;
+  border-radius: 12px;
+  cursor: pointer;
+  font-weight: 600;
+  color: #1a1a1a;
+  white-space: nowrap;
+}
+
+.date-tab.active {
+  border: 1px solid #4EBC73;
+  background: white;
+}
+
+.slots-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
+  gap: 10px;
+}
+
+.time-slot {
+  background: #52B973;
   color: white;
   border: none;
-  border-radius: 4px;
+  padding: 12px;
+  border-radius: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  text-align: center;
+  transition: 0.2s;
+}
+
+.time-slot:hover   { background: #45a064; }
+.time-slot.selected {
+  background: #2e7d32;
+  box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.review-item {
+  background: white;
+  border-bottom: 1px solid #eee;
+  padding: 20px 0;
+}
+
+.review-header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 10px;
+}
+
+.review-user-block {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.user-avatar-circle {
+  width: 48px;
+  height: 48px;
+  background: linear-gradient(135deg, #4EBC73, #2e9a56);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: 700;
+  font-size: 14px;
+  flex-shrink: 0;
+}
+
+.user-name { font-weight: 700; font-size: 16px; }
+.stars-row { display: flex; gap: 2px; color: #FFC107; font-size: 14px; }
+
+.review-content-text {
+  padding-left: 60px;
+  color: #333;
+  line-height: 1.5;
+  margin: 0;
+}
+
+.clinic-tag {
+  border: 1px solid #4EBC73;
+  color: #4EBC73;
+  padding: 10px;
+  border-radius: 12px;
+  text-align: center;
+  margin-bottom: 16px;
+}
+
+.booking-as {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: #f0faf4;
+  border: 1px solid #c8e6d4;
+  border-radius: 12px;
+  padding: 12px 14px;
+  margin-bottom: 16px;
+}
+
+.booking-as-avatar {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #4EBC73, #2e9a56);
+  color: white;
+  font-weight: 700;
+  font-size: 13px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.booking-as-label {
+  font-size: 11px;
+  color: #6b9e7e;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-weight: 600;
+}
+
+.booking-as-name {
+  font-size: 15px;
+  font-weight: 700;
+  color: #1a2e21;
+}
+
+.service-price { margin-bottom: 16px; }
+
+.price-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 15px;
+  margin-bottom: 4px;
+}
+
+.price-notice { font-size: 12px; color: #aaa; margin: 0; }
+
+.sidebar-label { color: #888; font-size: 13px; margin-bottom: 10px; }
+
+.submit-booking-btn {
+  width: 100%;
+  background: #4EBC73;
+  color: white;
+  border: none;
+  padding: 16px;
+  border-radius: 12px;
+  font-weight: bold;
+  font-size: 15px;
+  cursor: pointer;
   transition: background 0.2s;
 }
 
-.back-btn:hover {
-  background: #0056b3;
-}
+.submit-booking-btn:hover:not(:disabled) { background: #3da862; }
+.submit-booking-btn:disabled { opacity: 0.5; cursor: not-allowed; }
 
-.details p {
-  margin: 12px 0;
-  font-size: 16px;
-  color: #444;
-}
-
-.details b {
-  color: #000;
-  margin-right: 5px;
-}
-
-.slots {
+.modal-overlay {
+  position: fixed;
+  top: 0; left: 0; width: 100%; height: 100%;
+  background: rgba(0,0,0,0.5);
   display: flex;
-  flex-wrap: wrap;
-  gap: 12px;
-  margin: 20px 0;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
 }
 
-.slots button {
-  padding: 10px 15px;
-  border: 1px solid #007bff;
-  background-color: white;
-  color: #007bff;
-  border-radius: 6px;
+.modal-content {
+  background: white;
+  padding: 25px;
+  border-radius: 15px;
+  width: 90%;
+  max-width: 500px;
+}
+
+.rating-center {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.modal-doctor-avatar {
+  width: 90px;
+  height: 90px;
+  border-radius: 50%;
+  margin-bottom: 10px;
+  object-fit: cover;
+}
+
+.modal-reviewer-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: #f0faf4;
+  border: 1px solid #c8e6d4;
+  border-radius: 10px;
+  padding: 10px 14px;
+  margin: 12px 0;
+  width: 100%;
+  text-align: left;
+}
+
+.modal-reviewer-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #4EBC73, #2e9a56);
+  color: white;
+  font-weight: 700;
+  font-size: 13px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.modal-reviewer-name {
+  font-weight: 700;
+  font-size: 14px;
+  color: #1a2e21;
+}
+
+.modal-reviewer-sub {
+  font-size: 12px;
+  color: #6b9e7e;
+}
+
+.stars-picker { display: flex; gap: 8px; margin: 15px 0; }
+
+.big-star {
+  font-size: 40px;
+  color: #e0e0e0;
   cursor: pointer;
-  transition: all 0.2s;
+  -webkit-text-stroke: 1px #ccc;
+  transition: color 0.15s;
 }
 
-.slots button:hover {
-  background-color: #e7f1ff;
+.big-star.filled { color: #FFC107; -webkit-text-stroke: 0; }
+
+.modal-textarea {
+  width: 100%;
+  height: 100px;
+  padding: 12px;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  resize: none;
 }
 
-.slots button.active {
-  background-color: #007bff !important;
-  color: white !important;
-  border-color: #0056b3;
-}
-
-.confirm-btn {
-  margin-top: 30px;
-  padding: 12px 25px;
-  background-color: #28a745;
+.submit-full-btn {
+  width: 100%;
+  background: #4EBC73;
   color: white;
   border: none;
-  border-radius: 5px;
-  font-size: 16px;
+  padding: 16px;
+  border-radius: 12px;
   font-weight: bold;
   cursor: pointer;
-  transition: background 0.2s;
+  margin-top: 20px;
 }
 
-.confirm-btn:hover:not(:disabled) {
-  background-color: #218838;
+@media (max-width: 900px) {
+  .main-content { grid-template-columns: 1fr; }
+  .review-content-text { padding-left: 0; margin-top: 10px; }
 }
 
-.confirm-btn:disabled {
-  background-color: #ccc;
-  cursor: not-allowed;
+.guest-modal {
+  text-align: center;
+}
+
+.guest-modal-icon {
+  font-size: 40px;
+  margin-bottom: 10px;
+}
+
+.guest-modal-title {
+  font-size: 20px;
+  font-weight: 700;
+  color: #1a2e21;
+  margin-bottom: 8px;
+}
+
+.guest-modal-sub {
+  font-size: 14px;
+  color: #777;
+  line-height: 1.5;
+  margin-bottom: 16px;
+}
+
+.guest-selected-slot {
+  margin-bottom: 20px;
+}
+
+.slot-chip {
+  display: inline-block;
+  background: #f0faf4;
+  border: 1px solid #c8e6d4;
+  border-radius: 20px;
+  padding: 6px 14px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #2e7d4f;
+}
+
+.guest-field-group {
+  text-align: left;
+  margin-bottom: 16px;
+}
+
+.guest-label {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  color: #2c4a36;
+  margin-bottom: 6px;
+}
+
+.guest-input {
+  width: 100%;
+  padding: 12px 14px;
+  border: 1.5px solid #d4e8db;
+  border-radius: 10px;
+  font-size: 15px;
+  font-family: inherit;
+  color: #1a2e21;
+  background: #fff;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  box-sizing: border-box;
+}
+
+.guest-input::placeholder { color: #9bb5a3; }
+
+.guest-input:focus {
+  border-color: #4EBC73;
+  box-shadow: 0 0 0 4px rgba(78, 188, 115, 0.12);
+}
+
+.guest-input.has-error {
+  border-color: #e53935;
+  box-shadow: 0 0 0 3px rgba(229, 57, 53, 0.1);
+}
+
+.guest-error {
+  display: block;
+  color: #c62828;
+  font-size: 12px;
+  margin-top: 5px;
+}
+
+.guest-login-hint {
+  margin-top: 14px;
+  font-size: 13px;
+  color: #888;
+}
+
+.guest-login-hint a {
+  color: #2e9a56;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.guest-login-hint a:hover {
+  text-decoration: underline;
 }

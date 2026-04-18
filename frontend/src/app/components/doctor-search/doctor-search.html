@@ -23,38 +23,43 @@
     </select>
   </div>
 
-  <div class="doctor-grid">
-    <div class="doctor-card" *ngFor="let doctor of filteredDoctors">
-      
-      <div class="rating-badge">
-        <span class="star">★</span> {{ doctor.rating }}
-      </div>
-
-      <div class="header-main">
-        <img [src]="doctor.photoUrl" class="doctor-photo" alt="doctor">
-        <div class="doctor-info">
-          <h3 class="doctor-name">{{ doctor.name }}</h3>
-          <p class="specialty">{{ doctor.specialty }}</p>
-          <p class="experience">Стаж {{ doctor.experience }} лет</p>
+  <div class="main-content">
+    <div class="doctor-grid">
+      <div class="doctor-card" *ngFor="let doctor of filteredDoctors">
+        
+        <div class="rating-badge">
+          <span class="star">★</span> {{ doctor.rating }}
         </div>
-      </div>
 
-      <div class="clinic-section">
-        <p class="price-text">Принимает в одном медцентре <br> <span>от {{ doctor.price }} ₸</span></p>
-        <div class="clinic-badge">{{ doctor.clinic }}</div>
-        <p class="address">📍 {{ doctor.address }}</p>
-      </div>
+        <div class="header-main">
+          <img [src]="doctor.photoUrl" class="doctor-photo" alt="doctor">
+          <div class="doctor-info">
+            <h3 class="doctor-name">{{ doctor.name }}</h3>
+            <p class="specialty">{{ doctor.specialty }}</p>
+            <p class="experience">Стаж {{ doctor.experience }} лет</p>
+          </div>
+        </div>
 
-      <div class="slots-container">
-        <button class="slot-btn" *ngFor="let slot of doctor.slots">
-          {{ slot }}
+        <div class="clinic-section">
+          <p class="price-text">Принимает в одном медцентре <br> <span>от {{ doctor.price }} ₸</span></p>
+          <div class="clinic-badge">{{ doctor.clinic }}</div>
+        </div>
+
+        <div class="slots-container">
+          <button 
+            class="slot-btn" 
+            *ngFor="let slot of doctor.slots"
+            (click)="selectSlot(doctor, slot)"
+          >
+            {{ slot }}
+          </button>
+        </div>
+
+        <button class="book-btn" [routerLink]="['/book', doctor.id]">
+          Перейти в профиль
         </button>
+
       </div>
-
-      <button class="book-btn" [routerLink]="['/book', doctor.id]">
-        Записаться на прием
-      </button>
-
     </div>
   </div>
 </div>

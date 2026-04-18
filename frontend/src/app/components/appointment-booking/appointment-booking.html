@@ -1,28 +1,224 @@
-<div class="booking-container" *ngIf="doctor">
-  <button class="back-btn" (click)="goBack()">← Назад</button>
-  
-  <h2>Запись к врачу: {{ doctor.name }}</h2>
-  
-  <div class="details">
-    <p><b>Специальность:</b> {{ doctor.specialty }}</p>
-    
-    <p><b>Клиника:</b> {{ doctor.clinic }}</p> 
-    
-    <p><b>Рейтинг:</b> ⭐ {{ doctor.rating }}</p>
-    
-    <h4>Выберите время:</h4>
-    <div class="slots">
-      <button 
-        *ngFor="let slot of doctor.slots" 
-        class="slot-btn"
-        [class.active]="selectedSlot === slot"
-        (click)="selectSlot(slot)">
-        {{ slot }}
-      </button>
+<div class="page-wrapper" *ngIf="doctor">
+  <div class="nav-tabs">
+    <button class="tab-btn" [class.active]="activeTab === 'main'" (click)="setTab('main')">Главная</button>
+    <button class="tab-btn" [class.active]="activeTab === 'reviews'" (click)="setTab('reviews')">Отзывы ({{ doctorReviews.length }})</button>
+  </div>
+
+  <div class="main-content">
+    <div class="left-column">
+
+      <div class="card profile-card">
+        <div class="doctor-main-info">
+          <img [src]="doctor.photoUrl" class="avatar" alt="doctor">
+          <div class="text-info">
+            <span class="experience-badge">Стаж {{ doctor.experience }} лет</span>
+            <h2 class="doctor-name">{{ doctor.name }}</h2>
+            <p class="doctor-desc">Высшая категория • {{ doctor.specialty }}</p>
+
+            <div class="live-rating-row">
+              <span class="live-star">★</span>
+              <span class="live-rating-value">{{ liveRating }}</span>
+              <span class="live-rating-count">
+                ({{ doctorReviews.length }}
+                {{ doctorReviews.length === 1 ? 'отзыв' : doctorReviews.length >= 2 && doctorReviews.length <= 4 ? 'отзыва' : 'отзывов' }})
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card schedule-card" *ngIf="activeTab === 'main'">
+        <div class="location-header">
+          <div class="address-text">
+            <span class="icon">📍</span>
+            <strong>{{ doctor.address }}</strong>
+            <p></p>
+          </div>
+        </div>
+
+        <div class="date-tabs">
+          <button
+            *ngFor="let date of availableDates"
+            class="date-tab"
+            [class.active]="selectedDate === date.value"
+            (click)="selectDate(date.value)">
+            {{ date.label }}
+          </button>
+        </div>
+
+        <div class="slots-grid">
+          <button
+            *ngFor="let slot of doctor.slots"
+            class="time-slot"
+            [class.selected]="selectedSlot === slot"
+            (click)="selectSlot(slot)">
+            {{ slot }}
+          </button>
+        </div>
+      </div>
+
+      <div class="card reviews-card" *ngIf="activeTab === 'main' || activeTab === 'reviews'">
+        <div class="reviews-header">
+          <div class="header-text">
+            <h3>Отзывы проверены Clinic Booking</h3>
+            <p>Мы публикуем только достоверные мнения пациентов 💬</p>
+          </div>
+          <button *ngIf="doctorReviews.length > 0" class="leave-review-btn-header" (click)="openReviewModal()">
+            Оставить отзыв
+          </button>
+        </div>
+
+        <div class="reviews-list" *ngIf="doctorReviews.length > 0">
+          <div class="review-item" *ngFor="let review of doctorReviews">
+            <div class="review-header-row">
+              <div class="review-user-block">
+                <div class="user-avatar-circle">
+                  <span *ngIf="review.reviewerName">{{ review.reviewerName.slice(0, 2).toUpperCase() }}</span>
+                  <span *ngIf="!review.reviewerName">😊</span>
+                </div>
+                <div class="user-name-stars">
+                  <span class="user-name">{{ review.reviewerName || 'Пациент' }}</span>
+                  <div class="stars-row">
+                    <span class="star" *ngFor="let s of [1,2,3,4,5]" [class.filled]="s <= (review.rating || 5)">★</span>
+                  </div>
+                </div>
+              </div>
+              <span class="review-date-top">{{ review.date || '10 апреля 2026' }}</span>
+            </div>
+            <p class="review-content-text">{{ review.comment }}</p>
+          </div>
+        </div>
+
+        <div class="empty-reviews" *ngIf="doctorReviews.length === 0">
+          <div class="chat-icon"></div>
+          <p>Здесь пока никто не оставил отзыв,<br>но вы можете стать первым</p>
+          <button class="leave-review-main" (click)="openReviewModal()">Оставить отзыв</button>
+        </div>
+      </div>
     </div>
-    
-    <button class="confirm-btn" [disabled]="!selectedSlot" (click)="confirmBooking()">
-      Confirm Booking
-    </button>
+
+    <div class="right-column">
+      <div class="card booking-sidebar">
+        <p class="sidebar-label">Врач работает в 1 медцентре</p>
+        <div class="clinic-tag">{{ doctor.clinic }}</div>
+
+        <div class="booking-as" *ngIf="currentUser">
+          <div class="booking-as-avatar">{{ userInitials }}</div>
+          <div>
+            <div class="booking-as-label">Запись для</div>
+            <div class="booking-as-name">{{ currentUser.username }}</div>
+          </div>
+        </div>
+
+        <div class="service-price">
+          <div class="price-row">
+            <span>Первичный приём</span>
+            <strong>от {{ doctor.price }} ₸</strong>
+          </div>
+          <p class="price-notice">*Стоимость услуг может меняться</p>
+        </div>
+
+        <button
+          class="submit-booking-btn"
+          [disabled]="!selectedSlot"
+          (click)="confirmBooking()">
+          Записаться онлайн
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-overlay" *ngIf="isModalOpen" (click)="closeModal()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <button class="close-btn" (click)="closeModal()">×</button>
+      </div>
+
+      <div class="modal-body rating-center">
+        <img [src]="doctor.photoUrl" class="modal-doctor-avatar">
+        <h3 class="modal-doctor-name">{{ doctor.name }}</h3>
+        <p class="modal-doctor-spec">{{ doctor.specialty }}</p>
+
+        <div class="modal-reviewer-row" *ngIf="currentUser">
+          <div class="modal-reviewer-avatar">{{ userInitials }}</div>
+          <div>
+            <div class="modal-reviewer-name">{{ currentUser.username }}</div>
+            <div class="modal-reviewer-sub">оставляет отзыв</div>
+          </div>
+        </div>
+
+        <div class="rating-selection">
+          <p>Оцените от 1 до 5</p>
+          <div class="stars-picker">
+            <span
+              *ngFor="let star of [1,2,3,4,5]"
+              class="big-star"
+              [class.filled]="star <= selectedRating"
+              (click)="setRating(star)">
+              ★
+            </span>
+          </div>
+        </div>
+
+        <textarea
+          [(ngModel)]="newReviewText"
+          placeholder="Оставьте отзыв..."
+          class="modal-textarea">
+        </textarea>
+      </div>
+
+      <div class="modal-footer-full">
+        <button class="submit-full-btn" (click)="submitReview()">Отправить отзыв</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-overlay" *ngIf="isGuestModalOpen" (click)="closeGuestModal()">
+    <div class="modal-content guest-modal" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <button class="close-btn" (click)="closeGuestModal()">×</button>
+      </div>
+      <div class="modal-body">
+        <div class="guest-modal-icon">📋</div>
+        <h3 class="guest-modal-title">Данные для записи</h3>
+        <p class="guest-modal-sub">Укажите ваше имя и номер телефона — врач свяжется с вами для подтверждения</p>
+
+        <div class="guest-selected-slot">
+          <span class="slot-chip">🕐 {{ selectedSlot }}, {{ selectedDate }}</span>
+        </div>
+
+        <div class="guest-field-group">
+          <label class="guest-label">Ваше имя</label>
+          <input
+            class="guest-input"
+            [class.has-error]="guestNameError"
+            type="text"
+            [(ngModel)]="guestName"
+            placeholder="Иван Иванов"
+            (keyup.enter)="submitGuestBooking()"
+          >
+          <span class="guest-error" *ngIf="guestNameError">{{ guestNameError }}</span>
+        </div>
+
+        <div class="guest-field-group">
+          <label class="guest-label">Номер телефона</label>
+          <input
+            class="guest-input"
+            [class.has-error]="guestPhoneError"
+            type="tel"
+            [(ngModel)]="guestPhone"
+            placeholder="+7 (777) 000-00-00"
+            (keyup.enter)="submitGuestBooking()"
+          >
+          <span class="guest-error" *ngIf="guestPhoneError">{{ guestPhoneError }}</span>
+        </div>
+
+        <button class="submit-full-btn" (click)="submitGuestBooking()">Подтвердить запись</button>
+
+        <p class="guest-login-hint">
+          Уже есть аккаунт? <a routerLink="/login">Войти</a> для быстрой записи
+        </p>
+      </div>
+    </div>
   </div>
 </div>

@@ -1,0 +1,166 @@
+<div class="register-page">
+
+  <div class="brand-panel">
+    <div class="brand-content">
+      <div class="brand-logo">
+        <span class="logo-cross">✚</span>
+        <span class="logo-text">Clinic Booking</span>
+      </div>
+      <h1 class="brand-headline">Создайте<br>аккаунт<br>сегодня.</h1>
+      <p class="brand-sub">Один аккаунт — все ваши записи, врачи и отзывы в одном месте</p>
+
+      <div class="feature-list">
+        <div class="feature-item">
+          <span class="feat-icon">🔒</span>
+          <span>Ваши данные надёжно защищены</span>
+        </div>
+        <div class="feature-item">
+          <span class="feat-icon">📋</span>
+          <span>История всех записей сохраняется</span>
+        </div> 
+      </div>
+
+      <div class="steps-block">
+        <div class="step" [class.done]="username.length >= 2">
+          <span class="step-dot">{{ username.length >= 2 ? '✓' : '1' }}</span>
+          <span>Имя пользователя</span>
+        </div>
+        <div class="step-line"></div>
+        <div class="step" [class.done]="email.includes('@')">
+          <span class="step-dot">{{ email.includes('@') ? '✓' : '2' }}</span>
+          <span>Email адрес</span>
+        </div>
+        <div class="step-line"></div>
+        <div class="step" [class.done]="passwordStrength >= 2">
+          <span class="step-dot">{{ passwordStrength >= 2 ? '✓' : '3' }}</span>
+          <span>Надёжный пароль</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="form-panel">
+    <div class="form-card">
+      <div class="form-header">
+        <h2>Регистрация</h2>
+        <p>Уже есть аккаунт? <a routerLink="/login" class="link">Войти</a></p>
+      </div>
+
+      <div class="error-banner" *ngIf="serverError">
+        <span>⚠️</span> {{ serverError }}
+      </div>
+
+      <div class="field-group">
+        <label class="field-label">Имя пользователя <span class="required">*</span></label>
+        <div class="input-wrap" [class.has-error]="fieldErrors.username">
+          <span class="input-icon">👤</span>
+          <input
+            class="field-input"
+            type="text"
+            [(ngModel)]="username"
+            (ngModelChange)="clearFieldError('username')"
+            placeholder="Daniyar"
+            autocomplete="username"
+          >
+        </div>
+        <span class="field-error" *ngIf="fieldErrors.username">{{ fieldErrors.username }}</span>
+      </div>
+
+      <div class="field-group">
+        <label class="field-label">Email <span class="required">*</span></label>
+        <div class="input-wrap" [class.has-error]="fieldErrors.email">
+          <span class="input-icon">✉</span>
+          <input
+            class="field-input"
+            type="email"
+            [(ngModel)]="email"
+            (ngModelChange)="clearFieldError('email')"
+            placeholder="you@example.com"
+            autocomplete="email"
+          >
+        </div>
+        <span class="field-error" *ngIf="fieldErrors.email">{{ fieldErrors.email }}</span>
+      </div>
+
+      <div class="field-group">
+        <label class="field-label">Телефон <span class="optional">необязательно</span></label>
+        <div class="input-wrap">
+          <span class="input-icon">📱</span>
+          <input
+            class="field-input"
+            type="tel"
+            [(ngModel)]="phone"
+            placeholder="+7 (777) 000-00-00"
+            autocomplete="tel"
+          >
+        </div>
+      </div>
+
+      <div class="field-group">
+        <label class="field-label">Пароль <span class="required">*</span></label>
+        <div class="input-wrap" [class.has-error]="fieldErrors.password">
+          <span class="input-icon">🔒</span>
+          <input
+            class="field-input"
+            [type]="showPass ? 'text' : 'password'"
+            [(ngModel)]="password"
+            (ngModelChange)="clearFieldError('password')"
+            placeholder="Минимум 8 символов"
+            autocomplete="new-password"
+          >
+          <button class="toggle-pass" type="button" (click)="showPass = !showPass">
+            {{ showPass ? '🙈' : '👁' }}
+          </button>
+        </div>
+        <span class="field-error" *ngIf="fieldErrors.password">{{ fieldErrors.password }}</span>
+
+        <div class="strength-bar-wrap" *ngIf="password.length > 0">
+          <div class="strength-bar">
+            <div
+              class="strength-fill"
+              [style.width.%]="passwordStrength * 25"
+              [style.background]="strengthColor">
+            </div>
+          </div>
+          <span class="strength-label" [style.color]="strengthColor">{{ strengthLabel }}</span>
+        </div>
+      </div>
+
+      <div class="field-group">
+        <label class="field-label">Подтвердите пароль <span class="required">*</span></label>
+        <div class="input-wrap" [class.has-error]="fieldErrors.confirmPassword">
+          <span class="input-icon">🔒</span>
+          <input
+            class="field-input"
+            [type]="showConfirmPass ? 'text' : 'password'"
+            [(ngModel)]="confirmPassword"
+            (ngModelChange)="clearFieldError('confirmPassword')"
+            placeholder="Повторите пароль"
+            autocomplete="new-password"
+          >
+          <button class="toggle-pass" type="button" (click)="showConfirmPass = !showConfirmPass">
+            {{ showConfirmPass ? '🙈' : '👁' }}
+          </button>
+          <span class="match-icon" *ngIf="confirmPassword && password === confirmPassword">✓</span>
+        </div>
+        <span class="field-error" *ngIf="fieldErrors.confirmPassword">{{ fieldErrors.confirmPassword }}</span>
+      </div>
+
+
+      <label class="terms-row">
+        <input type="checkbox" [(ngModel)]="agreed" class="terms-check">
+        <span>Я принимаю <a href="#" class="link">условия использования</a> и <a href="#" class="link">политику конфиденциальности</a></span>
+      </label>
+
+      <button
+        class="submit-btn"
+        (click)="submit()"
+        [disabled]="loading || !agreed || !username || !email || !password || !confirmPassword">
+        <span *ngIf="!loading">Создать аккаунт</span>
+        <span *ngIf="loading" class="spinner"></span>
+      </button>
+
+      <p class="login-link">Уже зарегистрированы? <a routerLink="/login" class="link">Войти в аккаунт</a></p>
+    </div>
+  </div>
+</div>

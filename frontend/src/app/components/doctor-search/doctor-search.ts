@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { RouterLink, ActivatedRoute } from '@angular/router';
+import { RouterLink, ActivatedRoute, Router } from '@angular/router';
 import { BookingService } from '../../services/booking.service';
 import { Doctor } from '../../models/doctor.model';
 
@@ -24,7 +24,8 @@ export class DoctorSearchComponent implements OnInit {
 
   constructor(
     private bookingService: BookingService,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private router: Router
   ) {}
 
   ngOnInit() {
@@ -51,6 +52,12 @@ export class DoctorSearchComponent implements OnInit {
       const matchesSpecialty = this.selectedSpecialty === '' || doctor.specialty === this.selectedSpecialty;
       const matchesClinic = this.selectedClinic === '' || doctor.clinic === this.selectedClinic;
       return matchesName && matchesSpecialty && matchesClinic;
+    });
+  }
+
+  selectSlot(doctor: Doctor, slot: string) {
+    this.router.navigate(['/book', doctor.id], { 
+      queryParams: { time: slot } 
     });
   }
 }

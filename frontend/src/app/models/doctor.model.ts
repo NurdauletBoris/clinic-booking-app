@@ -15,8 +15,18 @@ export interface Appointment {
   id: number;
   doctorId: number;
   doctorName: string;
-  clinicName: string; 
+  clinicName: string;
   patientName: string;
   date: string;
   time: string;
+}
+
+export interface Review {
+  comment: string;
+  doctorName: string;
+  specialty: string;
+  photo: string;
+  rating?: number;
+  date?: string;
+  reviewerName?: string;
 }

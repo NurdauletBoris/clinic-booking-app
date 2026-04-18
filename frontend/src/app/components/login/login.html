@@ -1,0 +1,89 @@
+<div class="login-page">
+  <div class="brand-panel">
+    <div class="brand-content">
+      <div class="brand-logo">
+        <span class="logo-cross">✚</span>
+        <span class="logo-text">Clinic Booking</span>
+      </div>
+      <h1 class="brand-headline">Здоровье<br>начинается<br>здесь.</h1>
+      <p class="brand-sub">Запись к лучшим специалистам Алматы в несколько кликов</p>
+
+      <div class="feature-list">
+        <div class="feature-item">
+          <span class="feat-icon">🩺</span>
+          <span>Более 20 врачей разных специализаций</span>
+        </div>
+        <div class="feature-item">
+          <span class="feat-icon">📅</span>
+          <span>Онлайн-запись круглосуточно</span>
+        </div>
+        <div class="feature-item">
+          <span class="feat-icon">⭐</span>
+          <span>Проверенные отзывы пациентов</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="form-panel">
+    <div class="form-card">
+      <div class="form-header">
+        <h2>Добро пожаловать</h2>
+        <p>Войдите в свой аккаунт</p>
+      </div>
+
+      <div class="error-banner" *ngIf="error">
+        <span>⚠️</span> {{ error }}
+      </div>
+
+      <div class="field-group">
+        <label class="field-label">Email</label>
+        <div class="input-wrap">
+          <span class="input-icon">✉</span>
+          <input
+            class="field-input"
+            type="email"
+            [(ngModel)]="email"
+            placeholder="you@example.com"
+            (keyup.enter)="submit()"
+            autocomplete="email"
+          >
+        </div>
+      </div>
+
+      <div class="field-group">
+        <label class="field-label">Пароль</label>
+        <div class="input-wrap">
+          <span class="input-icon">🔒</span>
+          <input
+            class="field-input"
+            [type]="showPass ? 'text' : 'password'"
+            [(ngModel)]="password"
+            placeholder="••••••••"
+            (keyup.enter)="submit()"
+            autocomplete="current-password"
+          >
+          <button class="toggle-pass" type="button" (click)="showPass = !showPass">
+            {{ showPass ? '🙈' : '👁' }}
+          </button>
+        </div>
+      </div>
+
+      <button class="submit-btn" (click)="submit()" [disabled]="loading || !email || !password">
+        <span *ngIf="!loading">Войти</span>
+        <span *ngIf="loading" class="spinner"></span>
+      </button>
+
+      <div class="divider"><span>или</span></div>
+
+      <a routerLink="/register" class="register-btn">
+        Создать аккаунт
+      </a>
+
+      <p class="form-footer">
+        Нажимая «Войти», вы принимаете
+        <a href="#">условия использования</a> сервиса
+      </p>
+    </div>
+  </div>
+</div>

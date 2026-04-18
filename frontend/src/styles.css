@@ -1,6 +1,6 @@
 body { font-family: Arial, sans-serif; margin: 0; background: #f4f7f6; }
-nav { background: #007bff; color: white; padding: 1rem; text-align: center; }
+nav { background: #2e9a56; color: white; padding: 1rem; text-align: center; }
 .card { background: white; padding: 15px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
-button { cursor: pointer; padding: 8px 16px; border-radius: 4px; border: none; background: #007bff; color: white; }
+button { cursor: pointer; padding: 8px 16px; border-radius: 4px; border: none; background: linear-gradient(135deg, #2e9a56, #1a6b3a); color: white; }
 button:disabled { background: #ccc; }
 .active { background: #28a745 !important; }

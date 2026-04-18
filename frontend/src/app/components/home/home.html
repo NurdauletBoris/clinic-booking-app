@@ -1,7 +1,6 @@
 <div class="home-container">
   <header class="header-main">
-    <div class="logo" routerLink="/">Clinic booking</div>
-    
+    <div class="logo" routerLink="/">Clinic Booking</div>
     <div class="search-bar">
       <input 
         type="text" 
@@ -11,25 +10,133 @@
       >
       <button class="search-btn" (click)="onSearch()">🔍</button>
     </div>
-
     <nav class="nav-links">
       <button class="doctors-link" routerLink="/search">Врачи</button>
+
+      <ng-container *ngIf="!currentUser">
+        <a routerLink="/login" class="nav-login-btn">Войти</a>
+        <a routerLink="/register" class="nav-register-btn">Регистрация</a>
+      </ng-container>
+
+      <div class="user-block" *ngIf="currentUser">
+        <div class="user-avatar" [title]="currentUser.username">
+          {{ userInitials }}
+        </div>
+        <span class="user-name-label">{{ currentUser.username }}</span>
+        <button class="logout-btn" (click)="logout()" title="Выйти">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+            <polyline points="16 17 21 12 16 7"/>
+            <line x1="21" y1="12" x2="9" y2="12"/>
+          </svg>
+          Выйти
+        </button>
+      </div>
     </nav>
   </header>
+
+  <section class="symptoms-section">
+    <div class="symptoms-container">
+      <div class="symptoms-title">Что вас беспокоит?</div>
+      <p class="symptoms-subtitle">Выберите симптом — мы подберём нужного специалиста</p>
+      <div class="symptoms-list">
+        @for (item of symptoms; track item.label) {
+          <button class="symptom-chip" (click)="selectSymptom(item.specialty)">
+            {{ item.label }}
+          </button>
+        }
+      </div>
+    </div>
+  </section>
 
   <section class="categories-section">
     <h3>Популярные врачи для взрослых</h3>
     <div class="category-grid">
-      <div class="category-card" *ngFor="let cat of categories" (click)="filterByCategory(cat)">
-        <div class="icon-wrapper">
-          <img 
-            src="https://cdn-icons-png.flaticon.com/512/387/387561.png" 
-            [alt]="cat" 
-            (error)="handleIconError($event)"
-          >
+      @for (cat of categories; track cat.name) {
+        <div class="category-card" (click)="filterByCategory(cat.name)">
+          <div class="icon-wrapper">
+            <img [src]="cat.icon" [alt]="cat.name" (error)="handleIconError($event)">
+          </div>
+          <span>{{ cat.name }}</span>
         </div>
-        <span>{{ cat }}</span>
-      </div>
+      }
     </div>
   </section>
+
+  <section class="reviews-container">
+    <div class="reviews-header">
+      <h2>Последние отзывы о врачах</h2>
+      <button class="ask-button" (click)="leaveReview()">Оставить отзыв</button>
+    </div>
+
+    <div class="reviews-grid">
+      @for (review of recentReviews; track review.doctorName) {
+        <div class="review-card">
+          <div class="review-bubble">
+            {{ review.comment }}
+          </div>
+          <div class="doctor-footer">
+            <img [src]="review.photo" (error)="handleIconError($event)" alt="Doctor">
+            <div class="doctor-meta">
+              <div class="doctor-name">{{ review.doctorName }}</div>
+              <div class="doctor-spec">{{ review.specialty }}</div>
+            </div>
+            <div class="reviewer-chip" *ngIf="review.reviewerName">
+              {{ review.reviewerName }}
+            </div>
+          </div>
+        </div>
+      }
+    </div>
+  </section>
+
+  @if (isModalOpen) {
+    <div class="modal-overlay" (click)="closeModal()">
+      <div class="modal-content" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+          <h3>Оставить отзыв</h3>
+          <button class="close-btn" (click)="closeModal()">×</button>
+        </div>
+        
+        <div class="modal-body">
+          <div class="modal-reviewer-row" *ngIf="currentUser">
+            <div class="modal-reviewer-avatar">{{ userInitials }}</div>
+            <div>
+              <div class="modal-reviewer-name">{{ currentUser.username }}</div>
+              <div class="modal-reviewer-email">{{ currentUser.email }}</div>
+            </div>
+          </div>
+
+          <label>Выберите врача:</label>
+          <select [(ngModel)]="selectedDoctorIndex" class="modal-select">
+            <option [value]="null" disabled selected>-- Выберите врача из списка --</option>
+            @for (doc of allDoctors; track doc.name; let i = $index) {
+              <option [value]="i">{{ doc.name }} ({{ doc.specialty }})</option>
+            }
+          </select>
+
+          <label>Оценка:</label>
+          <div class="stars-picker">
+            <span
+              *ngFor="let star of [1,2,3,4,5]"
+              class="big-star"
+              [class.filled]="star <= selectedRating"
+              (click)="setRating(star)">★</span>
+          </div>
+
+          <label>Ваш отзыв:</label>
+          <textarea 
+            [(ngModel)]="newReviewText" 
+            placeholder="Напишите здесь ваш отзыв..."
+            class="modal-textarea"
+          ></textarea>
+        </div>
+
+        <div class="modal-footer">
+          <button class="cancel-btn" (click)="closeModal()">Отмена</button>
+          <button class="submit-btn" (click)="submitReview()">Отправить</button>
+        </div>
+      </div>
+    </div>
+  }
 </div>
