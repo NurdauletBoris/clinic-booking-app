@@ -22,7 +22,6 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   currentUser: AuthUser | null = null;
 
-  // Modal
   isModalOpen = false;
   selectedDoctorIndex: number | null = null;
   newReviewText: string = '';
@@ -31,33 +30,33 @@ export class HomeComponent implements OnInit, OnDestroy {
   private subs = new Subscription();
 
   private iconMap: { [key: string]: string } = {
-    'Аллерголог': 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSPFlD_Mrbv6AyQkhhEKmQTlK92EahYKnxvTw&s',
-    'ЛОР (отоларинголог)': 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR2pDRVrvlSi8wb18h90TZQ5a1dWHKI5eJ1jQ&s',
-    'Педиатр': 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTngh1zjF_C1BCKLdREBV-WEI99Z_yylt0Wlg&s',
-    'Невролог (Невропатолог)': 'https://cdn-icons-png.flaticon.com/512/15442/15442657.png',
-    'ВОП (врач общей практики)': 'https://cdn-icons-png.flaticon.com/512/3304/3304567.png',
-    'Ортодонт': 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTGQbuWkKAX6rvQUEEM235JkGAZSBiNqbzXtw&s',
+    'Аллерголог':               'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSPFlD_Mrbv6AyQkhhEKmQTlK92EahYKnxvTw&s',
+    'ЛОР (отоларинголог)':     'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR2pDRVrvlSi8wb18h90TZQ5a1dWHKI5eJ1jQ&s',
+    'Педиатр':                  'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTngh1zjF_C1BCKLdREBV-WEI99Z_yylt0Wlg&s',
+    'Невролог (Невропатолог)':  'https://cdn-icons-png.flaticon.com/512/15442/15442657.png',
+    'ВОП (врач общей практики)':'https://cdn-icons-png.flaticon.com/512/3304/3304567.png',
+    'Ортодонт':                 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTGQbuWkKAX6rvQUEEM235JkGAZSBiNqbzXtw&s',
     'Челюстно-лицевой хирург': 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRWZAaHecD36Pj6qZOaARsa_B_MPEApHwYthg&s',
-    'Нейрохирург': 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTZaTYMGN9N0XY1fadusbCxT9BLTFSYcpsZaA&s',
-    'Терапевт': 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQtIsFIpFSi0Izwovmem3eYAT_GxPOfrh-GJg&s',
-    'Хирург': 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR9I7JGgOE0f1BmN7-lXIpuExvKfMbJh6ZvAw&s',
-    'Уролог': 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQzAQu6BjQaTYDd7mP67GqDqkXjxf-FaVsa8g&s',
-    'Гинеколог': 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQt8HImSB3rTLND9uWyvq8Qc9OwX1XVuDS_Bg&s',
-    'Мануальный терапевт': 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRWN14JQaBeE0pZUrSLlHT-y4O54NGsIm1R7Q&s',
-    'Рентгенолог': 'https://cdn-icons-png.flaticon.com/512/3461/3461591.png'
+    'Нейрохирург':              'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTZaTYMGN9N0XY1fadusbCxT9BLTFSYcpsZaA&s',
+    'Терапевт':                 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQtIsFIpFSi0Izwovmem3eYAT_GxPOfrh-GJg&s',
+    'Хирург':                   'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR9I7JGgOE0f1BmN7-lXIpuExvKfMbJh6ZvAw&s',
+    'Уролог':                   'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQzAQu6BjQaTYDd7mP67GqDqkXjxf-FaVsa8g&s',
+    'Гинеколог':                'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQt8HImSB3rTLND9uWyvq8Qc9OwX1XVuDS_Bg&s',
+    'Мануальный терапевт':      'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRWN14JQaBeE0pZUrSLlHT-y4O54NGsIm1R7Q&s',
+    'Рентгенолог':              'https://cdn-icons-png.flaticon.com/512/3461/3461591.png',
   };
 
   symptoms = [
-    { label: 'Общее недомогание',   specialty: 'Терапевт' },
-    { label: 'Аллергия и зуд',      specialty: 'Аллерголог' },
-    { label: 'Болит ухо или горло', specialty: 'ЛОР (отоларинголог)' },
+    { label: 'Общее недомогание',     specialty: 'Терапевт' },
+    { label: 'Аллергия и зуд',        specialty: 'Аллерголог' },
+    { label: 'Болит ухо или горло',   specialty: 'ЛОР (отоларинголог)' },
     { label: 'Нужна справка ребенку', specialty: 'Педиатр' },
-    { label: 'Боли в спине или шее', specialty: 'Невролог (Невропатолог)' },
-    { label: 'Нужна операция',       specialty: 'Хирург' },
-    { label: 'Женское здоровье',     specialty: 'Гинеколог' },
-    { label: 'Мужское здоровье',     specialty: 'Уролог' },
-    { label: 'Сделать рентген',      specialty: 'Рентгенолог' },
-    { label: 'Проблемы с прикусом',  specialty: 'Ортодонт' },
+    { label: 'Боли в спине или шее',  specialty: 'Невролог (Невропатолог)' },
+    { label: 'Нужна операция',        specialty: 'Хирург' },
+    { label: 'Женское здоровье',      specialty: 'Гинеколог' },
+    { label: 'Мужское здоровье',      specialty: 'Уролог' },
+    { label: 'Сделать рентген',       specialty: 'Рентгенолог' },
+    { label: 'Проблемы с прикусом',   specialty: 'Ортодонт' },
   ];
 
   constructor(
@@ -79,63 +78,64 @@ export class HomeComponent implements OnInit, OnDestroy {
         const uniqueNames = [...new Set(doctors.map(d => d.specialty))].sort();
         this.categories = uniqueNames.map(name => ({
           name,
-          icon: this.iconMap[name] || 'https://cdn-icons-png.flaticon.com/512/387/387561.png'
+          icon: this.iconMap[name] || 'https://cdn-icons-png.flaticon.com/512/387/387561.png',
         }));
       })
     );
 
     this.subs.add(
       this.bookingService.reviews$.subscribe(reviews => {
-        this.recentReviews = reviews;
+        this.recentReviews = reviews.slice(-3).reverse();
       })
     );
+
+    this.bookingService.fetchAllReviewsFromApi();
   }
 
-  ngOnDestroy() {
-    this.subs.unsubscribe();
-  }
+  ngOnDestroy() { this.subs.unsubscribe(); }
 
-  logout() {
-    this.authService.logout();
-  }
+  logout() { this.authService.logout(); }
 
   get userInitials(): string {
     if (!this.currentUser) return '';
     return this.currentUser.username.slice(0, 2).toUpperCase();
   }
 
-  leaveReview() {
-    this.isModalOpen = true;
-  }
+  leaveReview()  { this.isModalOpen = true; }
 
   closeModal() {
-    this.isModalOpen = false;
+    this.isModalOpen         = false;
     this.selectedDoctorIndex = null;
-    this.newReviewText = '';
-    this.selectedRating = 0;
+    this.newReviewText       = '';
+    this.selectedRating      = 0;
   }
 
-  setRating(value: number) {
-    this.selectedRating = value;
-  }
+  setRating(value: number) { this.selectedRating = value; }
 
   submitReview() {
-    if (this.selectedDoctorIndex !== null && this.newReviewText.trim()) {
-      const selectedDoctor = this.allDoctors[this.selectedDoctorIndex];
-      const newReview: Review = {
-        comment:    this.newReviewText,
-        doctorName: selectedDoctor.name,
-        specialty:  selectedDoctor.specialty,
-        photo:      selectedDoctor.photoUrl,
-        rating:     this.selectedRating || undefined,
-        date:       '17 апреля 2026',
-        reviewerName: this.currentUser?.username || 'Аноним'
-      };
-      this.bookingService.addReview(newReview);
-      this.closeModal();
-    } else {
+    if (this.selectedDoctorIndex === null || !this.newReviewText.trim()) {
       alert('Пожалуйста, выберите врача и напишите отзыв');
+      return;
     }
+
+    const selectedDoctor = this.allDoctors[this.selectedDoctorIndex];
+    const newReview: Review = {
+      comment:      this.newReviewText,
+      doctorName:   selectedDoctor.name,
+      specialty:    selectedDoctor.specialty,
+      photo:        selectedDoctor.photoUrl,
+      rating:       this.selectedRating || undefined,
+      date:         '17 апреля 2026',
+      reviewerName: this.currentUser?.username || 'Аноним',
+    };
+
+    this.bookingService.addReviewViaApi(newReview).subscribe(result => {
+      if (result.success) {
+        this.closeModal();
+      } else {
+        alert(`Ошибка при отправке отзыва: ${result.error}`);
+      }
+    });
   }
 
   selectSymptom(specialty: string) {

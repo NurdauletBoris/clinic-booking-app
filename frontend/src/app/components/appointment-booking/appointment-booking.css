@@ -112,6 +112,33 @@
   background: white;
 }
 
+.slots-legend {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 14px;
+  flex-wrap: wrap;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: #666;
+  font-weight: 500;
+}
+
+.legend-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 3px;
+  display: inline-block;
+}
+
+.legend-dot.free     { background: #52B973; }
+.legend-dot.taken    { background: #e0e0e0; border: 1px solid #ccc; }
+.legend-dot.selected { background: #2e7d32; }
+
 .slots-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
@@ -122,18 +149,44 @@
   background: #52B973;
   color: white;
   border: none;
-  padding: 12px;
+  padding: 12px 8px;
   border-radius: 15px;
   font-weight: 600;
+  font-size: 14px;
   cursor: pointer;
   text-align: center;
   transition: 0.2s;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  line-height: 1.2;
 }
 
-.time-slot:hover   { background: #45a064; }
+.time-slot:hover:not(:disabled)  { background: #45a064; }
+
 .time-slot.selected {
   background: #2e7d32;
   box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.time-slot.booked {
+  background: #e0e0e0;
+  color: #aaa;
+  cursor: not-allowed;
+  text-decoration: none;
+  opacity: 0.8;
+}
+
+.time-slot.booked:hover { background: #e0e0e0; }
+
+.slot-taken-label {
+  font-size: 9px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  color: #999;
+  line-height: 1;
 }
 
 .review-item {
@@ -240,6 +293,30 @@
 .price-notice { font-size: 12px; color: #aaa; margin: 0; }
 
 .sidebar-label { color: #888; font-size: 13px; margin-bottom: 10px; }
+
+.selected-slot-preview {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #f0faf4;
+  border: 1px solid #c8e6d4;
+  border-radius: 10px;
+  padding: 10px 14px;
+  margin-bottom: 12px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #1a6b3a;
+}
+
+.slot-preview-icon { font-size: 16px; }
+
+.no-slot-hint {
+  text-align: center;
+  font-size: 12px;
+  color: #aaa;
+  margin-top: 8px;
+  margin-bottom: 0;
+}
 
 .submit-booking-btn {
   width: 100%;
@@ -366,9 +443,7 @@
   .review-content-text { padding-left: 0; margin-top: 10px; }
 }
 
-.guest-modal {
-  text-align: center;
-}
+.guest-modal { text-align: center; }
 
 .guest-modal-icon {
   font-size: 40px;
@@ -389,9 +464,7 @@
   margin-bottom: 16px;
 }
 
-.guest-selected-slot {
-  margin-bottom: 20px;
-}
+.guest-selected-slot { margin-bottom: 20px; }
 
 .slot-chip {
   display: inline-block;
@@ -462,6 +535,21 @@
   text-decoration: none;
 }
 
-.guest-login-hint a:hover {
-  text-decoration: underline;
+.guest-login-hint a:hover { text-decoration: underline; }
+.btn-spinner {
+  display: inline-block;
+  width: 18px;
+  height: 18px;
+  border: 2.5px solid rgba(255,255,255,0.35);
+  border-top-color: white;
+  border-radius: 50%;
+  animation: spin 0.65s linear infinite;
+  vertical-align: middle;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.submit-full-btn:disabled {
+  opacity: 0.75;
+  cursor: not-allowed;
 }

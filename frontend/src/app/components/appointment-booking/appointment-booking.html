@@ -46,13 +46,22 @@
           </button>
         </div>
 
+        <div class="slots-legend">
+          <span class="legend-item"><span class="legend-dot free"></span> Свободно</span>
+          <span class="legend-item"><span class="legend-dot taken"></span> Занято</span>
+          <span class="legend-item"><span class="legend-dot selected"></span> Выбрано</span>
+        </div>
+
         <div class="slots-grid">
           <button
             *ngFor="let slot of doctor.slots"
             class="time-slot"
             [class.selected]="selectedSlot === slot"
+            [class.booked]="bookedSlots.includes(slot)"
+            [disabled]="bookedSlots.includes(slot)"
             (click)="selectSlot(slot)">
             {{ slot }}
+            <span class="slot-taken-label" *ngIf="bookedSlots.includes(slot)">занято</span>
           </button>
         </div>
       </div>
@@ -118,15 +127,23 @@
           <p class="price-notice">*Стоимость услуг может меняться</p>
         </div>
 
+        <div class="selected-slot-preview" *ngIf="selectedSlot">
+          <span class="slot-preview-icon">🕐</span>
+          <span>{{ selectedSlot }}, {{ selectedDate }}</span>
+        </div>
+
         <button
           class="submit-booking-btn"
           [disabled]="!selectedSlot"
           (click)="confirmBooking()">
           Записаться онлайн
         </button>
+
+        <p class="no-slot-hint" *ngIf="!selectedSlot">Выберите время приёма</p>
       </div>
     </div>
   </div>
+
 
   <div class="modal-overlay" *ngIf="isModalOpen" (click)="closeModal()">
     <div class="modal-content" (click)="$event.stopPropagation()">
@@ -168,7 +185,10 @@
       </div>
 
       <div class="modal-footer-full">
-        <button class="submit-full-btn" (click)="submitReview()">Отправить отзыв</button>
+        <button class="submit-full-btn" (click)="submitReview()" [disabled]="isSubmittingReview">
+          <span *ngIf="!isSubmittingReview">Отправить отзыв</span>
+          <span *ngIf="isSubmittingReview" class="btn-spinner"></span>
+        </button>
       </div>
     </div>
   </div>

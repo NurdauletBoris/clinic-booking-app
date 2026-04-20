@@ -37,10 +37,10 @@ export class RegisterComponent {
     const p = this.password;
     if (!p) return 0;
     let score = 0;
-    if (p.length >= 8)              score++;
-    if (/[A-Z]/.test(p))           score++;
-    if (/[0-9]/.test(p))           score++;
-    if (/[^A-Za-z0-9]/.test(p))   score++;
+    if (p.length >= 8)            score++;
+    if (/[A-Z]/.test(p))         score++;
+    if (/[0-9]/.test(p))         score++;
+    if (/[^A-Za-z0-9]/.test(p)) score++;
     return score;
   }
 
@@ -90,23 +90,21 @@ export class RegisterComponent {
 
     this.loading = true;
 
-    setTimeout(() => {
-      const payload: RegisterRequest = {
-        username: this.username.trim(),
-        email:    this.email.trim().toLowerCase(),
-        password: this.password,
-        phone:    this.phone.trim() || undefined,
-      };
+    const payload: RegisterRequest = {
+      username: this.username.trim(),
+      email:    this.email.trim().toLowerCase(),
+      password: this.password,
+      phone:    this.phone.trim() || undefined,
+    };
 
-      const result = this.auth.register(payload);
+    this.auth.registerViaApi(payload).subscribe(result => {
       this.loading = false;
-
       if (result.success) {
         this.router.navigate(['/']);
       } else {
         this.serverError = result.error || 'Ошибка регистрации';
       }
-    }, 700);
+    });
   }
 
   clearFieldError(field: keyof FieldErrors) {

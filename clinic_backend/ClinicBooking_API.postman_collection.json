@@ -1,0 +1,333 @@
+{
+  "info": {
+    "name": "Clinic Booking API",
+    "description": "Complete Postman collection for the Clinic Booking Django backend.\n\nBase URL: http://localhost:8000/api\n\nWorkflow:\n1. Register or Login to get a token\n2. Copy the token value from the response\n3. Set it as the `token` collection variable (or use the auto-set script)\n4. All protected endpoints use Bearer {{token}} automatically",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "base_url", "value": "http://localhost:8000/api", "type": "string" },
+    { "key": "token",    "value": "",                          "type": "string" }
+  ],
+  "item": [
+
+    {
+      "name": "Auth",
+      "item": [
+
+        {
+          "name": "Register",
+          "event": [{
+            "listen": "test",
+            "script": {
+              "exec": [
+                "const json = pm.response.json();",
+                "if (json.token) { pm.collectionVariables.set('token', json.token); }",
+                "pm.test('Status 201', () => pm.response.to.have.status(201));",
+                "pm.test('Has token', () => pm.expect(json).to.have.property('token'));",
+                "pm.test('Has user',  () => pm.expect(json).to.have.property('user'));"
+              ],
+              "type": "text/javascript"
+            }
+          }],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"TestUser\",\n  \"email\": \"test@example.com\",\n  \"password\": \"password123\",\n  \"phone\": \"+7 777 000 00 00\"\n}"
+            },
+            "url": { "raw": "{{base_url}}/auth/register", "host": ["{{base_url}}"], "path": ["auth", "register"] }
+          },
+          "response": [{
+            "name": "201 Created — example",
+            "status": "Created",
+            "code": 201,
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": "{\n  \"token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...\",\n  \"user\": {\n    \"username\": \"TestUser\",\n    \"email\": \"test@example.com\",\n    \"token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...\"\n  }\n}"
+          }]
+        },
+
+        {
+          "name": "Login",
+          "event": [{
+            "listen": "test",
+            "script": {
+              "exec": [
+                "const json = pm.response.json();",
+                "if (json.token) { pm.collectionVariables.set('token', json.token); }",
+                "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                "pm.test('Has token', () => pm.expect(json).to.have.property('token'));",
+                "pm.test('Has user',  () => pm.expect(json).to.have.property('user'));"
+              ],
+              "type": "text/javascript"
+            }
+          }],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"daniyar@example.com\",\n  \"password\": \"password123\"\n}"
+            },
+            "url": { "raw": "{{base_url}}/auth/login", "host": ["{{base_url}}"], "path": ["auth", "login"] }
+          },
+          "response": [{
+            "name": "200 OK — example",
+            "status": "OK",
+            "code": 200,
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": "{\n  \"token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...\",\n  \"user\": {\n    \"username\": \"Daniyar\",\n    \"email\": \"daniyar@example.com\",\n    \"token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...\"\n  }\n}"
+          }, {
+            "name": "401 Unauthorized — wrong password",
+            "status": "Unauthorized",
+            "code": 401,
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": "{\n  \"message\": \"Неверный email или пароль\"\n}"
+          }]
+        },
+
+        {
+          "name": "Logout",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type",  "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"refresh\": \"<your_refresh_token_here>\"\n}"
+            },
+            "url": { "raw": "{{base_url}}/auth/logout", "host": ["{{base_url}}"], "path": ["auth", "logout"] }
+          },
+          "response": [{
+            "name": "200 OK",
+            "status": "OK",
+            "code": 200,
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": "{\n  \"detail\": \"Вы вышли из системы\"\n}"
+          }]
+        }
+
+      ]
+    },
+
+    {
+      "name": "Doctors",
+      "item": [
+
+        {
+          "name": "List all doctors",
+          "event": [{
+            "listen": "test",
+            "script": {
+              "exec": [
+                "pm.test('Status 200',    () => pm.response.to.have.status(200));",
+                "pm.test('Is array',      () => pm.expect(pm.response.json()).to.be.an('array'));",
+                "pm.test('Has doctors',   () => pm.expect(pm.response.json().length).to.be.greaterThan(0));",
+                "const d = pm.response.json()[0];",
+                "pm.test('Has photoUrl',  () => pm.expect(d).to.have.property('photoUrl'));",
+                "pm.test('Has slots arr', () => pm.expect(d.slots).to.be.an('array'));"
+              ],
+              "type": "text/javascript"
+            }
+          }],
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{base_url}}/doctors", "host": ["{{base_url}}"], "path": ["doctors"] }
+          },
+          "response": [{
+            "name": "200 OK — example (truncated)",
+            "status": "OK",
+            "code": 200,
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": "[\n  {\n    \"id\": 1,\n    \"name\": \"Ильиных Андрей Александрович\",\n    \"specialty\": \"Невролог (Невропатолог)\",\n    \"experience\": 19,\n    \"rating\": 4.89,\n    \"price\": 15000,\n    \"clinic\": \"Клиника ДОКТОР У ДОМА\",\n    \"address\": \"микрорайон Шугыла, 340/4к5\",\n    \"photoUrl\": \"https://idoctor.kz/images/doctors/.../photo.png\",\n    \"slots\": [\"08:30\", \"09:30\", \"10:30\", \"11:00\", \"11:30\", \"12:00\"]\n  }\n]"
+          }]
+        },
+
+        {
+          "name": "Filter by specialty",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/doctors?specialty=Терапевт",
+              "host": ["{{base_url}}"],
+              "path": ["doctors"],
+              "query": [{ "key": "specialty", "value": "Терапевт" }]
+            }
+          },
+          "response": []
+        },
+
+        {
+          "name": "Search by name",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/doctors?q=Кадирова",
+              "host": ["{{base_url}}"],
+              "path": ["doctors"],
+              "query": [{ "key": "q", "value": "Кадирова" }]
+            }
+          },
+          "response": []
+        }
+
+      ]
+    },
+
+    {
+      "name": "Appointments",
+      "item": [
+
+        {
+          "name": "Create appointment (authenticated)",
+          "event": [{
+            "listen": "test",
+            "script": {
+              "exec": [
+                "pm.test('Status 201', () => pm.response.to.have.status(201));",
+                "const j = pm.response.json();",
+                "pm.test('Has id',          () => pm.expect(j).to.have.property('id'));",
+                "pm.test('Has doctorName',  () => pm.expect(j).to.have.property('doctorName'));",
+                "pm.test('Has patientName', () => pm.expect(j).to.have.property('patientName'));"
+              ],
+              "type": "text/javascript"
+            }
+          }],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type",  "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"doctorId\": 11,\n  \"patientName\": \"Daniyar\",\n  \"date\": \"2026-04-20\",\n  \"time\": \"09:00\"\n}"
+            },
+            "url": { "raw": "{{base_url}}/appointments", "host": ["{{base_url}}"], "path": ["appointments"] }
+          },
+          "response": [{
+            "name": "201 Created — example",
+            "status": "Created",
+            "code": 201,
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": "{\n  \"id\": 1,\n  \"doctorName\": \"Кадирова Зайтунам Турсуновна\",\n  \"clinicName\": \"KAZMED - Медицинский центр в Аксае\",\n  \"patientName\": \"Daniyar\",\n  \"date\": \"2026-04-20\",\n  \"time\": \"09:00\",\n  \"status\": \"pending\",\n  \"created_at\": \"2026-04-18T10:00:00Z\"\n}"
+          }]
+        },
+
+        {
+          "name": "Create appointment (guest — no token)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"doctorId\": 3,\n  \"patientName\": \"Гость Пациент\",\n  \"date\": \"2026-04-21\",\n  \"time\": \"11:00\"\n}"
+            },
+            "url": { "raw": "{{base_url}}/appointments", "host": ["{{base_url}}"], "path": ["appointments"] }
+          },
+          "response": []
+        },
+
+        {
+          "name": "List my appointments",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": { "raw": "{{base_url}}/appointments", "host": ["{{base_url}}"], "path": ["appointments"] }
+          },
+          "response": [{
+            "name": "200 OK — example",
+            "status": "OK",
+            "code": 200,
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": "[\n  {\n    \"id\": 1,\n    \"doctorName\": \"Кадирова Зайтунам Турсуновна\",\n    \"clinicName\": \"KAZMED - Медицинский центр в Аксае\",\n    \"patientName\": \"Daniyar\",\n    \"date\": \"2026-04-20\",\n    \"time\": \"09:00\",\n    \"status\": \"pending\",\n    \"created_at\": \"2026-04-18T10:00:00Z\"\n  }\n]"
+          }]
+        },
+
+        {
+          "name": "Delete appointment",
+          "request": {
+            "method": "DELETE",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": { "raw": "{{base_url}}/appointments/1", "host": ["{{base_url}}"], "path": ["appointments", "1"] }
+          },
+          "response": [{
+            "name": "204 No Content",
+            "status": "No Content",
+            "code": 204,
+            "body": ""
+          }]
+        }
+
+      ]
+    },
+
+    {
+      "name": "Reviews",
+      "item": [
+
+        {
+          "name": "Submit review",
+          "event": [{
+            "listen": "test",
+            "script": {
+              "exec": [
+                "pm.test('Status 201', () => pm.response.to.have.status(201));",
+                "const j = pm.response.json();",
+                "pm.test('Has id',      () => pm.expect(j).to.have.property('id'));",
+                "pm.test('Has comment', () => pm.expect(j).to.have.property('comment'));"
+              ],
+              "type": "text/javascript"
+            }
+          }],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type",  "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"doctorName\": \"Кадирова Зайтунам Турсуновна\",\n  \"specialty\": \"Терапевт\",\n  \"photo\": \"https://idoctor.kz/images/doctors/1229001/1229283/GC5s0tiSEj92t9rc03REuuHKvwq1CVnBcPzbtLge_200x200.png\",\n  \"comment\": \"Замечательный врач, очень внимательная!\",\n  \"rating\": 5,\n  \"date\": \"17 апреля 2026\",\n  \"reviewerName\": \"Daniyar\"\n}"
+            },
+            "url": { "raw": "{{base_url}}/reviews", "host": ["{{base_url}}"], "path": ["reviews"] }
+          },
+          "response": [{
+            "name": "201 Created — example",
+            "status": "Created",
+            "code": 201,
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": "{\n  \"id\": 4,\n  \"doctor_name_out\": \"Кадирова Зайтунам Турсуновна\",\n  \"specialty_out\": \"Терапевт\",\n  \"photo_out\": \"https://idoctor.kz/images/doctors/.../photo.png\",\n  \"reviewerName\": \"Daniyar\",\n  \"comment\": \"Замечательный врач, очень внимательная!\",\n  \"rating\": 5,\n  \"date\": \"17 апреля 2026\",\n  \"created_at\": \"2026-04-18T10:05:00Z\"\n}"
+          }]
+        },
+
+        {
+          "name": "Get reviews for a doctor",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/reviews?doctor=Кадирова",
+              "host": ["{{base_url}}"],
+              "path": ["reviews"],
+              "query": [{ "key": "doctor", "value": "Кадирова" }]
+            }
+          },
+          "response": []
+        },
+
+        {
+          "name": "Get all reviews",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{base_url}}/reviews", "host": ["{{base_url}}"], "path": ["reviews"] }
+          },
+          "response": []
+        }
+
+      ]
+    }
+
+  ]
+}

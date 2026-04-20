@@ -22,6 +22,7 @@ export class AppointmentBookingComponent implements OnInit, OnDestroy {
   isModalOpen = false;
   newReviewText: string = '';
   selectedRating: number = 0;
+  isSubmittingReview = false;
 
   liveRating: number = 0;
 
@@ -33,16 +34,18 @@ export class AppointmentBookingComponent implements OnInit, OnDestroy {
   guestNameError: string = '';
   guestPhoneError: string = '';
 
+  bookedSlots: string[] = [];
+
   availableDates = [
-    { label: 'Сегодня',    value: '2026-04-17' },
-    { label: '20 апр, пн', value: '2026-04-20' },
-    { label: '21 апр, вт', value: '2026-04-21' },
-    { label: '22 апр, ср', value: '2026-04-22' },
-    { label: '23 апр, чт', value: '2026-04-23' },
-    { label: '24 апр, пт', value: '2026-04-24' },
+    { label: 'Сегодня',    value: '2026-04-21' },
+    { label: '22 апр, пн', value: '2026-04-22' },
+    { label: '23 апр, вт', value: '2026-04-23' },
+    { label: '24 апр, ср', value: '2026-04-24' },
+    { label: '25 апр, чт', value: '2026-04-25' },
+    { label: '26 апр, пт', value: '2026-04-26' },
   ];
 
-  selectedDate: string = '2026-04-17';
+  selectedDate: string = '2026-04-21';
 
   private subs = new Subscription();
 
@@ -67,8 +70,14 @@ export class AppointmentBookingComponent implements OnInit, OnDestroy {
       this.bookingService.doctors$.subscribe(doctors => {
         const found = doctors.find(d => d.id === id);
         if (found) {
+          const isFirstLoad = !this.doctor;
           this.doctor     = found;
           this.liveRating = found.rating;
+
+          if (isFirstLoad) {
+            this.bookingService.fetchReviewsFromApi(found.name);
+            this.loadBookedSlots();
+          }
         }
       })
     );
@@ -77,6 +86,7 @@ export class AppointmentBookingComponent implements OnInit, OnDestroy {
       this.bookingService.reviews$.subscribe(allReviews => {
         if (this.doctor) {
           this.doctorReviews = allReviews.filter(r => r.doctorName === this.doctor!.name);
+          this.liveRating = this.bookingService.getLiveRating(this.doctor.name);
         }
       })
     );
@@ -95,40 +105,68 @@ export class AppointmentBookingComponent implements OnInit, OnDestroy {
     return this.currentUser.username.slice(0, 2).toUpperCase();
   }
 
-  setTab(tab: string)            { this.activeTab = tab; }
-  selectDate(dateValue: string)  { this.selectedDate = dateValue; this.selectedSlot = ''; }
-  selectSlot(slot: string)       { this.selectedSlot = slot; }
-  setRating(value: number)       { this.selectedRating = value; }
-  openReviewModal()              { this.isModalOpen = true; }
+  setTab(tab: string) { this.activeTab = tab; }
+
+  selectDate(dateValue: string) {
+    this.selectedDate = dateValue;
+    this.selectedSlot = '';
+    this.loadBookedSlots();
+  }
+
+  selectSlot(slot: string) {
+    if (this.bookedSlots.includes(slot)) return;
+    this.selectedSlot = slot;
+  }
+
+  setRating(value: number)  { this.selectedRating = value; }
+  openReviewModal()         { this.isModalOpen = true; }
 
   closeModal() {
-    this.isModalOpen    = false;
-    this.newReviewText  = '';
-    this.selectedRating = 0;
+    this.isModalOpen         = false;
+    this.newReviewText       = '';
+    this.selectedRating      = 0;
+    this.isSubmittingReview  = false;
+  }
+
+  loadBookedSlots() {
+    if (!this.doctor || !this.selectedDate) return;
+    this.bookingService.getBookedSlots(this.doctor.id, this.selectedDate)
+      .subscribe(slots => {
+        this.bookedSlots = slots;
+        if (this.bookedSlots.includes(this.selectedSlot)) {
+          this.selectedSlot = '';
+        }
+      });
   }
 
   submitReview() {
-    if (this.doctor && this.newReviewText.trim() && this.selectedRating > 0) {
-      const newReview: Review = {
-        comment:      this.newReviewText,
-        doctorName:   this.doctor.name,
-        specialty:    this.doctor.specialty,
-        photo:        this.doctor.photoUrl,
-        rating:       this.selectedRating,
-        date:         '17 апреля 2026',
-        reviewerName: this.currentUser?.username || 'Аноним'
-      };
-      this.bookingService.addReview(newReview);
-      this.closeModal();
-      this.setTab('reviews');
-    } else {
+    if (!this.doctor || !this.newReviewText.trim() || this.selectedRating === 0) {
       alert('Пожалуйста, выберите рейтинг и напишите отзыв');
+      return;
     }
+    if (this.isSubmittingReview) return;
+
+    const newReview: Review = {
+      comment:      this.newReviewText,
+      doctorName:   this.doctor.name,
+      specialty:    this.doctor.specialty,
+      photo:        this.doctor.photoUrl,
+      rating:       this.selectedRating,
+      date:         '21 апреля 2026',
+      reviewerName: this.currentUser?.username || 'Аноним',
+    };
+
+    this.isSubmittingReview = true;
+
+    this.bookingService.addReview(newReview);
+    this.closeModal();
+    this.setTab('reviews');
+
+    this.bookingService.addReviewViaApi(newReview).subscribe();
   }
 
   confirmBooking() {
     if (!this.selectedSlot) return;
-
     if (this.currentUser) {
       this.doBook(this.currentUser.username);
     } else {
@@ -138,22 +176,21 @@ export class AppointmentBookingComponent implements OnInit, OnDestroy {
 
   closeGuestModal() {
     this.isGuestModalOpen = false;
-    this.guestName = '';
-    this.guestPhone = '';
-    this.guestNameError = '';
-    this.guestPhoneError = '';
+    this.guestName        = '';
+    this.guestPhone       = '';
+    this.guestNameError   = '';
+    this.guestPhoneError  = '';
   }
 
   submitGuestBooking() {
-    this.guestNameError = '';
+    this.guestNameError  = '';
     this.guestPhoneError = '';
 
-    const nameOk = this.guestName.trim().length >= 2;
+    const nameOk  = this.guestName.trim().length >= 2;
     const phoneOk = /^[\d\s\+\-\(\)]{7,}$/.test(this.guestPhone.trim());
 
-    if (!nameOk) this.guestNameError = 'Введите ваше имя (минимум 2 символа)';
+    if (!nameOk)  this.guestNameError  = 'Введите ваше имя (минимум 2 символа)';
     if (!phoneOk) this.guestPhoneError = 'Введите корректный номер телефона';
-
     if (!nameOk || !phoneOk) return;
 
     this.doBook(this.guestName.trim());
@@ -161,20 +198,27 @@ export class AppointmentBookingComponent implements OnInit, OnDestroy {
   }
 
   private doBook(patientName: string) {
-    if (this.doctor && this.selectedSlot) {
-      const newAppt: Appointment = {
-        id:          Date.now(),
-        doctorId:    this.doctor.id,
-        doctorName:  this.doctor.name,
-        clinicName:  this.doctor.clinic,
-        patientName,
-        date:        this.selectedDate,
-        time:        this.selectedSlot
-      };
-      this.bookingService.bookAppointment(newAppt);
-      alert(`✅ Запись подтверждена!\n\nПациент: ${patientName}\nДата: ${this.selectedDate} в ${this.selectedSlot}`);
-      this.router.navigate(['/search']);
-    }
+    if (!this.doctor || !this.selectedSlot) return;
+
+    const newAppt: Appointment = {
+      id:          Date.now(),
+      doctorId:    this.doctor.id,
+      doctorName:  this.doctor.name,
+      clinicName:  this.doctor.clinic,
+      patientName,
+      date:        this.selectedDate,
+      time:        this.selectedSlot,
+    };
+
+    this.bookingService.bookAppointmentViaApi(newAppt).subscribe(result => {
+      if (result.success) {
+        alert(`✅ Запись подтверждена!\n\nПациент: ${patientName}\nДата: ${this.selectedDate} в ${this.selectedSlot}`);
+        this.router.navigate(['/search']);
+      } else {
+        alert(`❌ ${result.error}`);
+        this.loadBookedSlots();
+      }
+    });
   }
 
   goBack() { this.location.back(); }

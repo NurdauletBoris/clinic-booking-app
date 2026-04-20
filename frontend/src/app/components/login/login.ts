@@ -26,16 +26,18 @@ export class LoginComponent {
     this.error   = '';
     this.loading = true;
 
-    setTimeout(() => {
-      const payload: LoginRequest = { email: this.email.trim(), password: this.password };
-      const result = this.auth.login(payload);
-      this.loading = false;
+    const payload: LoginRequest = {
+      email:    this.email.trim(),
+      password: this.password,
+    };
 
+    this.auth.loginViaApi(payload).subscribe(result => {
+      this.loading = false;
       if (result.success) {
         this.router.navigate(['/']);
       } else {
         this.error = result.error || 'Ошибка входа';
       }
-    }, 600);
+    });
   }
 }
